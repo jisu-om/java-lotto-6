@@ -1,9 +1,15 @@
 package lotto.controller;
 
+import lotto.domain.Lotto;
+import lotto.domain.Lottos;
 import lotto.domain.PurchaseAmount;
+import lotto.dto.LottosDto;
+import lotto.service.LottoMaker;
+import lotto.utils.Mapper;
 import lotto.view.InputView;
 import lotto.view.OutputView;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class MainController {
@@ -22,18 +28,22 @@ public class MainController {
 
     public void run() {
         PurchaseAmount purchaseAmount = createPurchaseAmount();
+        long quantityOfLotto = purchaseAmount.getQuantityOfLotto();
+        List<Lotto> lottosMade = LottoMaker.makeLottos(quantityOfLotto);
+        Lottos lottos = Lottos.from(lottosMade);
+        LottosDto lottosDto = Mapper.toLottosDto(lottos);
+        outputView.printLottos(lottosDto);
 
     }
 
-    private void initializeControllers() {
-        orderController = OrderController.of(inputView, outputView);
-    }
-
+//    private void initializeControllers() {
+//        orderController = OrderController.of(inputView, outputView);
+//    }
 
     private PurchaseAmount createPurchaseAmount() {
         return readUserInput(() -> {
             long input = inputView.readPurchaseAmount();
-            return PurchaseAmount.of(input);
+            return PurchaseAmount.from(input);
         });
     }
 
