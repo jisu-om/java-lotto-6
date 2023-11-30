@@ -20,4 +20,8 @@ public class PurchaseAmount {
     public long getQuantityOfLotto() {
         return amount / LOTTO_PRICE;
     }
+
+    public long getAmount() {
+        return amount;
+    }
 }

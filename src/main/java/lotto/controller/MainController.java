@@ -1,10 +1,8 @@
 package lotto.controller;
 
-import lotto.domain.Lotto;
-import lotto.domain.Lottos;
-import lotto.domain.PurchaseAmount;
-import lotto.domain.WinningLotto;
+import lotto.domain.*;
 import lotto.dto.LottosDto;
+import lotto.dto.ResultDto;
 import lotto.service.LottoMaker;
 import lotto.utils.Mapper;
 import lotto.view.InputView;
@@ -16,7 +14,6 @@ import java.util.function.Supplier;
 public class MainController {
     private final InputView inputView;
     private final OutputView outputView;
-    //private OrderController orderController;  //컨트롤러 추가하는 경우
 
     private MainController(InputView inputView, OutputView outputView) {
         this.inputView = inputView;
@@ -36,13 +33,10 @@ public class MainController {
         outputView.printLottos(lottosDto);
         Lotto winningNumbers = readWinningNumbers();
         WinningLotto winningLotto = readWinningLotto(winningNumbers);
-
-
+        RankResult rankResult = lottos.findRanks(winningLotto);
+        ResultDto resultDto = Mapper.toTotalRankDto(purchaseAmount, rankResult);
+        outputView.printResult(resultDto);
     }
-
-//    private void initializeControllers() {
-//        orderController = OrderController.of(inputView, outputView);
-//    }
 
     private PurchaseAmount createPurchaseAmount() {
         return readUserInput(() -> {

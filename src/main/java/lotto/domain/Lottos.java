@@ -1,6 +1,7 @@
 package lotto.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Lottos {
     private final List<Lotto> lottos;
@@ -15,6 +16,16 @@ public class Lottos {
 
     public List<Lotto> getLottos() {
         return List.copyOf(lottos);
+    }
+
+    public RankResult findRanks(WinningLotto winningLotto) {
+        List<LottoRank> lottoRanks = lottos.stream()
+                .map(lotto -> LottoRank.findByMatchResult(
+                        lotto.getMatchCount(winningLotto.getWinningNumbers()),
+                        lotto.contains(winningLotto.getBonusNumber())))
+                .flatMap(Optional::stream)
+                .toList();
+        return RankResult.from(lottoRanks);
     }
 
     public long getQuantity() {
