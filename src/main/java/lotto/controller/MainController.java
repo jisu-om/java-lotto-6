@@ -26,16 +26,10 @@ public class MainController {
 
     public void run() {
         PurchaseAmount purchaseAmount = createPurchaseAmount();
-        long quantityOfLotto = purchaseAmount.getQuantityOfLotto();
-        List<Lotto> lottosMade = LottoMaker.makeLottos(quantityOfLotto);
-        Lottos lottos = Lottos.from(lottosMade);
-        LottosDto lottosDto = Mapper.toLottosDto(lottos);
-        outputView.printLottos(lottosDto);
-        Lotto winningNumbers = readWinningNumbers();
-        WinningLotto winningLotto = readWinningLotto(winningNumbers);
-        RankResult rankResult = lottos.findRanks(winningLotto);
-        ResultDto resultDto = Mapper.toTotalRankDto(purchaseAmount, rankResult);
-        outputView.printResult(resultDto);
+        Lottos lottos = createLottos(purchaseAmount);
+        printLottos(lottos);
+        WinningLotto winningLotto = createWinningLotto();
+        printResult(lottos, winningLotto, purchaseAmount);
     }
 
     private PurchaseAmount createPurchaseAmount() {
@@ -45,18 +39,36 @@ public class MainController {
         });
     }
 
-    private Lotto readWinningNumbers() {
+    private Lottos createLottos(PurchaseAmount purchaseAmount) {
+        long quantityOfLotto = purchaseAmount.getQuantityOfLotto();
+        List<Lotto> lottosMade = LottoMaker.makeLottos(quantityOfLotto);
+        return Lottos.from(lottosMade);
+    }
+
+    private void printLottos(Lottos lottos) {
+        LottosDto lottosDto = Mapper.toLottosDto(lottos);
+        outputView.printLottos(lottosDto);
+    }
+
+    private WinningLotto createWinningLotto() {
+        Lotto winningNumbers = createWinningNumbers();
+        return readUserInput(() -> {
+            int bonusNumber = inputView.readBonusNumber();
+            return WinningLotto.of(winningNumbers, bonusNumber);
+        });
+    }
+
+    private Lotto createWinningNumbers() {
         return readUserInput(() -> {
             List<Integer> numbers = inputView.readWinningNumbers();
             return new Lotto(numbers);
         });
     }
 
-    private WinningLotto readWinningLotto(Lotto winningNumbers) {
-        return readUserInput(() -> {
-            int bonusNumber = inputView.readBonusNumber();
-            return WinningLotto.of(winningNumbers, bonusNumber);
-        });
+    private void printResult(Lottos lottos, WinningLotto winningLotto, PurchaseAmount purchaseAmount) {
+        RankResult rankResult = lottos.findRanks(winningLotto);
+        ResultDto resultDto = Mapper.toTotalRankDto(purchaseAmount, rankResult);
+        outputView.printResult(resultDto);
     }
 
     private <T> T readUserInput(Supplier<T> supplier) {
