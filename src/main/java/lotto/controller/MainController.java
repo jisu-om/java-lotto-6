@@ -3,6 +3,7 @@ package lotto.controller;
 import lotto.domain.Lotto;
 import lotto.domain.Lottos;
 import lotto.domain.PurchaseAmount;
+import lotto.domain.WinningLotto;
 import lotto.dto.LottosDto;
 import lotto.service.LottoMaker;
 import lotto.utils.Mapper;
@@ -33,6 +34,9 @@ public class MainController {
         Lottos lottos = Lottos.from(lottosMade);
         LottosDto lottosDto = Mapper.toLottosDto(lottos);
         outputView.printLottos(lottosDto);
+        Lotto winningNumbers = readWinningNumbers();
+        WinningLotto winningLotto = readWinningLotto(winningNumbers);
+
 
     }
 
@@ -47,12 +51,17 @@ public class MainController {
         });
     }
 
-    private Orders createOrders() {
+    private Lotto readWinningNumbers() {
         return readUserInput(() -> {
-            List<OrderItem> items = inputView.readOrders().stream()
-                    .map(OrderItemDto::toOrderItem)
-                    .toList();
-            return Orders.from(items);
+            List<Integer> numbers = inputView.readWinningNumbers();
+            return new Lotto(numbers);
+        });
+    }
+
+    private WinningLotto readWinningLotto(Lotto winningNumbers) {
+        return readUserInput(() -> {
+            int bonusNumber = inputView.readBonusNumber();
+            return WinningLotto.of(winningNumbers, bonusNumber);
         });
     }
 

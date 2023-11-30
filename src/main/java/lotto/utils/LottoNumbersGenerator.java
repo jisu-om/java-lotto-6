@@ -9,6 +9,7 @@ import java.util.List;
 import static lotto.constants.Constants.LOTTO_NUMBERS_SIZE;
 import static lotto.constants.Constants.MIN_LOTTO_NUMBER;
 import static lotto.constants.Constants.MAX_LOTTO_NUMBER;
+import static lotto.exception.ErrorMessage.NOT_NUMERIC_INPUT;
 
 public class LottoNumbersGenerator {
     public static List<Integer> generate() {
